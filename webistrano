@@ -1,0 +1,75 @@
+ 应用部署：webistrano 自动化部署流程，程序文件使用git管理，部署操作固化到脚本和webistrano，receipe里面，可重复操作，操作固定化，自动化，可以持续改进。
+
+ 
+
+介绍：通过页面方式发布应用，进行应用的版本变更，使用capistrano进行多服务器同时操作管理（ssh key 登录），git对程序文件内容进行版本管理，方便版本回退，部署task集成了常见应用的常用操作，比如重启多个服务，iis操作，shell脚本的执行，应用的端口url检查等，
+
+ 
+
+ 
+
+ 
+
+ 
+
+1 应用服务器安装，安装脚本：
+
+2 自动化需要的key通信设置：
+
+3 自动需要的git 目录设置  
+
+4 应用添加到webistrano 平台里的： 参考 。。。 及其子页面
+
+5 需要注意的参考规范 
+
+5 做好的进行登记，记录到 
+
+6 日常操作使用的task 参考
+
+webistrano 自动部署的原理介绍 
+
+webistrano自动部署使用开源ruby自动部署工具capistrano做自动部署相关命令执行，webistrano只是页面调用capistrano做具体命令。
+
+我们的自动部署涉及到文件的更新，我们使用git进行文件更新发布的管理，文件更新后会有相关的应用重启等操作，这些命令会在webistrano里登记，在webistrano里统一管理，
+
+增加一个自动部署的内容，需要如下几项操作，具体看子页面
+
+1 server间使用key通信
+
+2部署 文件使用git管理
+
+3 webistrano里相关信息的配置：各个应用对应的stage的建立
+
+4 相关命令的添加：iis tomcat jboss  服务重启 ，
+
+5相关变量设置确认包括：部署路径，启动命令，对应的服务名称，iis里的相关配置信息
+
+相关变量配置信息
+
+tag_name ：发布版本时新版本的tag名  每个project一个，新建project要设置这个变量，而且设置为prompt。
+
+git_path ：应用的部署目录 (目录后面不要 /  ，不然备份位置会出错 ， 这样 /cygdrive/d/websites    不是 /cygdrive/d/websites/  后面这个/ 不要) 
+
+iispool  ：iis应用池的名字，应用为iis站点，需要设置相应应用池的名字。不设置也 可以批量全部recycle
+
+servicename ：windows服务名，应用为window的服务，服务的名字如果是中文要重新注册，
+
+sc create servicename   binpath= ""     displayname= "servicedisplayname" 
+
+建议 servicename和servicedisplayname与部署目录相同比如：
+
+sc create .. binpath= ".. "     displayname= ".. " 
+
+ 
+
+appserver_cmd  ： linux应用服务器的启动、关闭、重启的命令脚步路径，包含命令的完整路径 ，可以直接调用的完整路径
+
+其他的变量：
+
+custom_test_cmd  ( )    
+
+git_repopath（类似 /opt/gitroot/....git     
+
+su_user(需要su就添加这个变量，不需要就不用添加，程序会判断是否有这个变量，然后执行相应的用户权限操作)
+
+iiswebsite
