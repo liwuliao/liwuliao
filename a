@@ -1,0 +1,111 @@
+#!/bin/bash -x 
+
+PROJECTS_DIR=/home/gavingeng/projects/email
+
+function update_all()
+{
+    for d in `ls`
+    do  
+    #  echo $d;  
+        cd $PROJECTS_DIR/$d
+        echo "update project:current_dir: $PWD"
+        `git pull` >>/home/gavingeng/tmp/test.log 2>&1 & 
+        sleep 5
+        echo "update success  ^_^"
+    done
+}
+
+function update()
+{
+    echo "hello ,u can update"  
+    `git pull` >>/tmp/test.log 2>&1 &
+    echo "update success  ^_^"
+}
+
+cd $PROJECTS_DIR
+
+if [ -z  "$1"  ];then
+    update_all
+elif [ -d  "$PROJECTS_DIR/$1" ];then
+    cd $PROJECTS_DIR/$1
+    echo $PWD
+    update
+else
+    echo "not exist \"$PROJECTS_DIR/$1\""
+    exit 0;
+fi
+
+ 
+
+在做git更新时，若没有更新，就会出现"Already date to date"，这里将它重定向到日志中做处理
+
+ 
+
+今天又对脚本进行了更新、处理，如下：
+
+ 
+
+#!/bin/bash -x 
+
+PROJECTS_DIR=/home/gavingeng/projects/email
+
+##排除以下情况：
+##1.非目录
+##2.非git目录
+
+function is_git_dir(){
+    param=`find $PWD -name ".git"`
+    if [ -z "$param" ];then
+  return 1 #1为假
+    else
+	return 0 #0为真
+    fi    
+}
+
+function update_all()
+{
+    for d in `ls`
+    do
+    	if [ -d "$PROJECTS_DIR/$d" ];then
+	    #  echo $d;  
+            cd $PROJECTS_DIR/$d
+
+	    if is_git_dir $PWD;then
+  	    	echo "update project:current_dir: $PWD"
+  	    	`git pull` >>/home/gavingeng/tmp/test.log 2>&1 & 
+   	    	sleep 5
+  	    	echo "update success  ^_^"
+	    else
+		echo "$PWD is not a git dir!"
+	    fi
+	else
+	    echo "$d is not a dirctory"
+	fi
+    done
+}
+
+function update()
+{
+    echo "hello ,u can update"	
+    `git pull` >>/tmp/test.log 2>&1 &
+    echo "update success  ^_^"
+}
+
+
+cd $PROJECTS_DIR
+
+if [ -z  "$1"  ];then
+    update_all
+elif [ -d  "$PROJECTS_DIR/$1" ];then
+    cd $PROJECTS_DIR/$1
+    echo $PWD
+    if is_git_dir $PWD;then
+  	  update
+    else
+	echo "$PWD is not a git dir!"
+    fi
+else
+    echo "not exist \"$PROJECTS_DIR/$1\""
+    exit 0;
+fi
+
