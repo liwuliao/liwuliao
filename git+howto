@@ -1,0 +1,51 @@
+全局设置:
+
+ 下载并安装 Git
+  git config --global user.name "Your Name"
+  git config --global user.email lijun5223@163.com
+  Add your public key ( 将sshkey传到git账号下)
+
+初始下一步:
+
+  mkdir liwuliao
+  cd liwuliao
+  git init
+  touch README
+  git add README
+  git commit -m 'first commit'
+  git remote add origin git@github.com:liwuliao/liwuliao.git
+  git push origin master
+
+git ls-files
+
+现有的 Git 仓库?
+
+  cd existing_git_repo
+  git remote add origin git@github.com:liwuliao/liwuliao.git
+  git push origin master
+ 
+# 
+git clone git@github.com:liwuliao/liwuliao.git
+touch README1
+git add README1
+git commit -m 'second commit'
+git push origin master
+
+git pull
+
+# git 服务器搭建（当中省略了客户端sshkey生成）
+yum install git
+
+groupadd -g 999 git
+useradd -g git -d /app/git -s /bin/bash -u 999 git
+passwd git
+
+su git
+cd $HOME
+git clone git://github.com/sitaramc/gitolite
+cd gitolite/
+mkdir -p $HOME/bin $HOME/share/gitolite/conf $HOME/share/gitolite/hooks
+src/gl-system-install $HOME/bin $HOME/share/gitolite/conf $HOME/share/gitolite/hooks
+echo "PATH=$PATH:$HOME/bin" >> ~/.bashrc
+source ~/.bashrc
+gl-setup /tmp/id_dsa.pub
