@@ -1,0 +1,60 @@
+webistrano
+
+ 1. Configuration
+  
+    Copy config/webistrano_config.rb.sample to config/webistrano_config.rb
+    and edit appropriatly. In this configuration file you can set the mail
+    settings of Webistrano.
+  
+  2. Database
+  
+    Copy config/database.yml.sample to config/database.yml and edit to
+    resemble your setting. You need at least the production database.
+    The others are optional entries for development and testing.
+  
+    Then create the database structure with Rake:
+  
+    > cd webistrano
+    > RAILS_ENV=production rake db:migrate
+  
+  3. Start Webistrano  
+  
+    > cd webistrano
+    > ruby script/server -d -p 3000 -e production
+  
+    Webistrano is then available at http://host:3000/
+  
+    The default user is `admin`, the password is `admin`. Please change the password
+    after the first login.
+   
+#########################################################
+yum install mysql mysql-server mysql-devel
+gem install mysql
+gem install bundler
+
+
+#########################################################
+
+if  yum can install 1.8.7  then :
+yum install ruby ruby-devel ruby-irb ruby-mysql ruby-rdoc ruby-ri
+
+or source install ruby  
+wget ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p352.zip
+unzip  ruby-1.8.7-p352.zip
+cd  ruby-1.8.7-p352
+./configure --prefix=/opt/ruby1.8.7
+make
+
+make install
+wget http://production.cf.rubygems.org/rubygems/rubygems-1.8.11.zip
+unzip rubygems-1.8.11.zip
+cd rubygems-1.8.11
+ruby setup.rb
+
+gem install addressable version
+
+gem install addressable builder capistrano  crazycode-cap-recipes fastthread highline i18n json memcache-client mocha mysql net-scp net-sftp net-ssh net-ssh-gateway passenger rack rake ruby-ole spreadsheet tzinfo
+
+也可以到http://rubygems.org  手动下载每个gem包再安装
+rails（不需要下载安装 webistrano默认带rails 235） rest-open-uri
+gem 一直网络错误无法安装,写了下载gem的脚本,已经增加下载依赖,直接安装gem的功能.wgetgems.rb   增加指定版本功能  ./wgetgem3.rb  rake-0.8.7  rack-1.0.1 ...... 
