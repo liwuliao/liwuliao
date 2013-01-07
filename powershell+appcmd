@@ -1,0 +1,33 @@
+Set-Location SQLSERVER:\SQL\APP129203\DEFAULT
+Get-ChildItem
+Invoke-Sqlcmd -Query "SELECT GETDATE() AS TimeOfQuery;" -ServerInstance (Get-Item .)
+
+
+Set-Location SQLSERVER:\SQL\localhost\DEFAULT\Databases
+Get-ChildItem
+
+Set-Location SQLSERVER:\SQL\localhost\DEFAULT\Databases\AdventureWorks
+
+
+应用到: Windows 7, Windows Server 2008, Windows Server 2008 R2, Windows Vista
+
+
+运行的是 64 位 Windows,请从 %windir%\system32\inetsrv 目录而不是 %windir%\syswow64\inetsrv 目录中使用 Appcmd.exe.
+
+启动 Appcmd.exe
+在命令提示符处,键入 cd %windir%\system32\inetsrv,然后按 Enter.
+
+
+appcmd list wp
+appcmd list 
+
+
+appcmd /?
+
+若要查看有关特定 Appcmd.exe 对象（例如可以与 site 对象一起使用的命令）的帮助信息,请在命令提示符处键入如下命令,然后按 Enter：
+
+appcmd site /?
+
+若要查看有关可以使用 Appcmd.exe 对象和命令（如 site 对象和 add 命令）配置的设置的帮助信息,请在命令提示符处键入如下命令,然后按 Enter：
+
+appcmd add site /? 
