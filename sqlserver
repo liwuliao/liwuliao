@@ -23,7 +23,29 @@ GO
 Exec xp_cmdshell 'query user'
 GO
 
- EXEC master..xp_cmdshell 'bcp ALADDIN_SUB.dbo.ALADDINPBX_NOANSWERCALL out d:\aladdin-2013.txt -c -T'
+ EXEC xp_cmdshell 'bcp ALADDIN_SUB.dbo.ALADDINPBX_NOANSWERCALL out d:\aladdin-2013.txt -c -T'
+ EXEC xp_cmdshell 'bcp "select * from ALADDIN_SUB.dbo.ALADDINPBX_NOANSWERCALL" queryout d:\aladdin-2013.txt -c -T'
+
+
+ EXEC master..xp_cmdshell 'bcp declare @a1 char(10);
+declare @a2 char(10);
+set @a1= '无工号';
+set @a2 ='2013-1-6' 
+  SELECT
+       [NAS_KIND] as '拨入按键'
+      ,[NAS_EXTNUMBER] as '分机号'
+      ,@a1
+      ,[NAS_STARTTIME]  as '呼入时间'
+      ,[NAS_ENDTIME] as '结束时间'
+      ,[NAS_LENGTH]  as '录音时间'
+      ,[NAS_CALLEDERID] as '客户号码'
+      ,[NAS_DEAL]   as '呼叫类型'
+      ,[NAS_PHONENUMBER] 
+      ,[NAS_WAITELENGTH]
+      ,[NAS_EXTGROUP]
+  FROM [ALADDIN_SUB].[dbo].[ALADDINPBX_NOANSWERCALL] 
+  where NAS_STARTTIME >@a2  ALADDIN_SUB.dbo.ALADDINPBX_NOANSWERCALL out d:\aladdin-2013.txt -c -T'
+
 
 --用完后,要记得将xp_cmdshell禁用(出于安全考虑)
 -- 允许配置高级选项
