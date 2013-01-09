@@ -1,0 +1,91 @@
+SELECT [REC_DIRECTION]
+      ,[REC_EXTNUMBER]
+      ,[REC_AGENTID]
+      ,[REC_STARTTIME]
+      ,[REC_ENDTIME]
+      ,[REC_RECORDLENGTH]
+      ,[REC_CALLEDERID]
+      ,[REC_HANGUP]
+      ,[REC_PHONENUMBER]
+      ,[REC_CALLTYPE]
+      ,[REC_IVRDISP]
+      ,[REC_TRANSWAITTIME]
+      ,[REC_RINGWAITTIME]
+      ,[REC_EXTGROUP]
+      ,[REC_TALKTYPE]
+  FROM [ALADDIN_SUB].[dbo].[ALADDINPBX_RECORDLOGS]
+
+  where  REC_STARTTIME > '2013-1-6'
+
+
+
+  SELECT
+       [NAS_KIND]
+      ,[NAS_CALLEDERID]
+      ,[NAS_EXTNUMBER]
+      ,[NAS_STARTTIME]
+      ,[NAS_ENDTIME]
+      ,[NAS_LENGTH]
+      ,[NAS_DEAL]
+      ,[NAS_PHONENUMBER]
+      ,[NAS_WAITELENGTH]
+      ,[NAS_EXTGROUP]
+  FROM [ALADDIN_SUB].[dbo].[ALADDINPBX_NOANSWERCALL] 
+  
+  where NAS_STARTTIME >'2013-1-6' 
+
+
+
+declare @a1 char(10);
+declare @a2 char(10);
+set @a1= '未接';
+set @a2 ='2013-1-6' 
+SELECT [REC_DIRECTION] as '拨入按键'
+      ,[REC_EXTNUMBER] as '分机号'
+      ,[REC_AGENTID] as '工号'
+      ,[REC_STARTTIME] as '呼入时间'
+      ,[REC_ENDTIME] as '结束时间'
+      ,[REC_RECORDLENGTH] as '录音时间'
+      ,[REC_CALLEDERID] as '客户号码'
+      ,[REC_CALLTYPE] as '呼叫类型'
+      ,[REC_IVRDISP] as  '流程组'
+      ,[REC_TRANSWAITTIME] 
+      ,[REC_RINGWAITTIME]
+      ,[REC_EXTGROUP] as '呼入组'
+      ,[REC_TALKTYPE] as '转接类型'
+ 
+  FROM [ALADDIN_SUB].[dbo].[ALADDINPBX_RECORDLOGS]
+  where  REC_STARTTIME > @a2
+
+declare @a1 char(10);
+declare @a2 char(10);
+set @a1= '无工号';
+set @a2 ='2013-1-6' 
+  SELECT
+       [NAS_KIND] as '拨入按键'
+      ,[NAS_EXTNUMBER] as '分机号'
+      ,@a1
+      ,[NAS_STARTTIME]  as '呼入时间'
+      ,[NAS_ENDTIME] as '结束时间'
+      ,[NAS_LENGTH]  as '录音时间'
+      ,[NAS_CALLEDERID] as '客户号码'
+      ,[NAS_DEAL]   as '呼叫类型'
+      ,[NAS_PHONENUMBER] 
+      ,[NAS_WAITELENGTH]
+      ,[NAS_EXTGROUP]
+  FROM [ALADDIN_SUB].[dbo].[ALADDINPBX_NOANSWERCALL] 
+  where NAS_STARTTIME >@a2 
+
+
+sp_configure 
+
+USE master;
+GO
+EXEC sp_configure 'show advanced option', '1';
+
+RECONFIGURE;
+EXEC sp_configure;
+
+
+  bcp ALADDIN_SUB.dbo.ALADDINPBX_NOANSWERCALL out d:\aladdin-2013.txt -c -T
+  EXEC master..xp_cmdshell 'bcp ALADDIN_SUB.dbo.ALADDINPBX_NOANSWERCALL out d:\aladdin-2013.txt -c -T'
