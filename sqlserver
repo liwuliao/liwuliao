@@ -62,6 +62,20 @@ RECONFIGURE
 
 
 ###################################################################
+DECLARE @TableName VARCHAR(50),@Sql NVARCHAR(MAX),@NAS_STARTTIME varchar(50);
+SET @TableName = 'ALADDINPBX_NOANSWERCALL';
+SET @NAS_STARTTIME = '2013-1-9';
+SET @sql = 'SELECT * FROM '+QUOTENAME(@TableName)+' WHERE NAS_STARTTIME >='+CAST(@NAS_STARTTIME AS CHAR(10))+'ORDER BY NAS_ID DESC';
+print @sql
+--EXEC(@sql);
+
+DECLARE @TableName VARCHAR(50),@Sql NVARCHAR(MAX),@NAS_STARTTIME varchar(50);
+SET @TableName = 'ALADDINPBX_NOANSWERCALL';
+SET @NAS_STARTTIME = '2013-1-9';
+SET @sql = 'SELECT * FROM '+QUOTENAME(@TableName)+'WHERE NAS_STARTTIME >'''+CAST(@NAS_STARTTIME AS char(8))+'''ORDER BY NAS_ID DESC';
+print @sql;
+--EXEC(@sql);
+
 
 SELECT [REC_DIRECTION]
       ,[REC_EXTNUMBER]
