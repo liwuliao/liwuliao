@@ -1,0 +1,171 @@
+#分布式内存队列系统
+1、Memcacheq
+2、Fqueue
+3、RabbitMQ
+4、Beanstalkd
+5、linkedin kafka
+
+Beanstalkd 是最近出现的一个轻量级消息中间件，他的最大特点是将自己定位为基于管道  (tube) 和任务 (job) 的工作队列 (work-queue)。
+
+Beanstalkd 支持任务优先级 (priority), 延时 (delay), 超时重发 (time-to-run) 和预留 (buried),能够很好的支持分布式的后台任务和定时任务处理
+
+
+安装
+
+RabbitMQ是基于Erlang的，所以首先必须配置Erlang环境。
+
+从Erlang的官网 http://www.erlang.org/download.html 下载最新的erlang安装包，我下载的版本是 otp_src_R14B03.tar.gz 。
+
+然后：
+
+$ tar xvzf otp_src_R14B03.tar.gz
+$ cd otp_src_R14B03
+$ ./configure
+
+编译后的输出如下图：
+
+提示没有wxWidgets和fop，但是问题不大。继续：
+$ make
+$ sudo make install
+
+“By default, Erlang/OTP will be installed in `/usr/local/{bin,lib/erlang}`. To instead install in `<BaseDir>/{bin,lib/erlang}`, use the `--prefix=<BaseDir>` option.”
+
+
+安装完Erlang，开始安装RabbitMQ-Server。
+
+主要参考官方文档：http://www.rabbitmq.com/build-server.html
+
+需要安装一个比较新的Python版本。安装略。
+
+需要安装simplejson。从此处下载最新的版本： http://pypi.python.org/pypi/simplejson#downloads 。我下载的版本是 simplejson-2.2.1.tar.gz
+
+$ tar xvzf simplejson-2.2.1.tar.gz
+$ cd simplejson-2.2.1
+$ sudo python setup.py install
+
+然后安装RabbitMQ Server。从此处下载源代码版本的RabbitMQ： http://www.rabbitmq.com/server.html。我下载的版本是 rabbitmq-server-2.6.1.tar.gz
+
+$ tar xvzf rabbitmq-server-2.6.1.tar.gz
+$ cd rabbitmq-server-2.6.1
+$ make
+# TARGET_DIR=/usr/local SBIN_DIR=/usr/local/sbin MAN_DIR=/usr/local/man make install
+
+在sbin/目录下出现了三个命令：
+rabbitmqctl  rabbitmq-env  rabbitmq-server
+
+安装成功。
+
+运行
+
+找到sbin/目录，运行程序：
+/usr/local/sbin/rabbitmq-server –detached
+
+停止程序：
+/usr/local/sbin/rabbitmqctl stop 
+
+配置
+
+主要参考官方文档：http://www.rabbitmq.com/configure.html
+
+一般情况下，RabbitMQ的默认配置就足够了。如果希望特殊设置的话，有两个途径：
+一个是环境变量的配置文件 rabbitmq-env.conf ；
+一个是配置信息的配置文件 rabbitmq.config；
+注意，这两个文件默认是没有的，如果需要必须自己创建。
+
+rabbitmq-env.conf
+这个文件的位置是确定和不能改变的，位于：/etc/rabbitmq目录下（这个目录需要自己创建）。
+文件的内容包括了RabbitMQ的一些环境变量，常用的有：
+#RABBITMQ_NODE_PORT=    //端口号
+#HOSTNAME=
+RABBITMQ_NODENAME=mq
+RABBITMQ_CONFIG_FILE=        //配置文件的路径
+RABBITMQ_MNESIA_BASE=/rabbitmq/data        //需要使用的MNESIA数据库的路径
+RABBITMQ_LOG_BASE=/rabbitmq/log        //log的路径
+RABBITMQ_PLUGINS_DIR=/rabbitmq/plugins    //插件的路径
+
+具体的列表见：http://www.rabbitmq.com/configure.html#define-environment-variables
+
+rabbitmq.config
+这是一个标准的erlang配置文件。它必须符合erlang配置文件的标准。
+它既有默认的目录，也可以在rabbitmq-env.conf文件中配置。
+
+文件的内容详见：http://www.rabbitmq.com/configure.html#config-items
+
+监控
+
+主要参考官方文档：http://www.rabbitmq.com/management.html
+
+RabbitMQ提供了一个web的监控页面系统，这个系统是以Plugin的方式进行调用的。
+
+首先，在rabbitmq-env.conf中配置好plugins目录的位置：RABBITMQ_CONFIG_FILE
+
+将监控页面所需要的plugin下载到plugins目录下，这些plugin包括：
+  mochiweb
+  webmachine
+  rabbitmq_mochiweb
+  amqp_client
+  rabbitmq_management_agent
+  rabbitmq_management
+下载路径位于：http://www.rabbitmq.com/plugins.html#rabbitmq_management
+
+重新启动RabbitMQ，输入http://server-name:55672/mgmt/ 就能够进入到监控页面。默认的用户名和密码是： guest 和 guest。如图：
+
+
+# memcachedq安装
+Dependencies
+
+Before deploying MemcacheQ, make sure that following packages have been installed:
+Berkeley DB 4.7 or later
+
+Download from <http://www.oracle.com/database/berkeley-db/db/index.html>
+
+How to install BerkekeyDB:
+
+$tar xvzf db-4.7.25.tar.gz
+$cd db-4.7.25/
+$cd build_unix/
+$../dist/configure
+$make
+$sudo make install
+
+libevent 1.4.x or later
+
+Download from <http://monkey.org/~provos/libevent/>
+
+How to install libevent:
+
+$tar xvzf libevent-1.4.x-stable.tar.gz
+$cd libevent-1.4.x-stable
+$./configure
+$make
+$sudo make install
+
+On a linux, load .so file by add two line in /etc/ld.so.conf:
+
+/usr/local/lib
+/usr/local/BerkeleyDB.4.7/lib
+
+Then, run 'ldconfig'.
+Building MemcacheQ
+
+On a *nix, just following:
+
+$tar xvzf memcacheq-0.1.x.tar.gz
+$cd memcacheq-0.1.x
+$./configure --enable-threads
+$make
+$sudo make install
+
+Start the daemon
+
+For example:
+
+memcacheq -d -r -H /data1/memcacheq -N -v -L 1024 -B 1024 > /data1/mq_error.log 2>&1
+
+Notice: Because MemcacheQ is using fixed-length storage, so you should use '-B' option to specify the max length of your message. Default is 1024 bytes. Any message that shorter than the length you specified will be padded with '0x20', the space character. A message includes following bytes:
+
+<your queue name bytes> + <message metadata(9 ~ 20+ bytes)> + <your message body bytes>
+
+use "-h" option to see more configures.
+
+Have fun :)
