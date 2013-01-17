@@ -39,3 +39,8 @@ echo "3" >/app/java/zkdata/data/myid
 #每台都要启动
 /app/java/zookeeper/bin/zkServer.sh start
 /app/java/zookeeper/bin/zkServer.sh status
+
+echo ruok|nc localhost 21811
+echo dump|nc localhost 21811
+echo stat|nc localhost 21811
+echo srst|nc localhost 21811
