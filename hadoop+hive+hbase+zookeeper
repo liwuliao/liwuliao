@@ -400,6 +400,10 @@ cp /app/java/hadoop/hadoop-0.20.2-core.jar  /app/java/hbase/lib
 /app/java/hbase/bin/stop-hbase.sh
 /app/java/hbase/bin/hbase shell
 
+# hbase 默认带了zookeeper 如果不想使用默认的zookeeper 那么设置以下
+vim /app/java/hbase/conf/hbase-env.sh
+ export HBASE_MANAGES_ZK=false
+
 # httpsqs
 /usr/local/tokyotyrant/bin/ttserver -host 127.0.0.1 -port 11210 -thnum 8 -dmn -pid /app/ttserver/ttserver.pid -log /app/ttserver/ttserver.log -le -ulog /app/ttserver/ -ulim 128m -sid 1 -rts /app/ttserver/ttserver.rts /app/ttserver/database.tch
 httpsqs -d -p 1218 -x /app/ttserver/
