@@ -150,4 +150,3 @@ Notice: Because MemcacheQ is using fixed-length storage, so you should use '-B' 
 
 use "-h" option to see more configures.
 
-Have fun :)
