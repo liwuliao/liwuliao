@@ -18,6 +18,13 @@ clientPort=21811
 # Purge task interval in hours  
 # Set to "0" to disable auto purge feature  
 #autopurge.purgeInterval=1  
+# set maxClientCnxns
+#maxClientCnxns=0
+#set minSessionTimeout
+#minSessionTimeout=1000
+#set maxSessionTImeout
+#maxSessionTimeout=10000
+
 
 # server cluster
 server.1=192.168.129.41:28881:38881
