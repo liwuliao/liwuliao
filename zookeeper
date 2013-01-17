@@ -1,0 +1,41 @@
+# zookeeper cluster
+vim /app/java/zookeeper/conf/zoo.cfg
+# The number of milliseconds of each tick
+tickTime=2000
+# The number of ticks that the initial
+# synchronization phase can take
+initLimit=10
+# The number of ticks that can pass between
+# sending a request and getting an acknowledgement
+syncLimit=5
+# the directory where the snapshot is stored.
+dataDir=/app/java/zkdata/data
+dataLogDir=/app/java/zkdata/log
+# the port at which the clients will connect
+clientPort=21811
+# The number of snapshots to retain in dataDir  
+#autopurge.snapRetainCount=3  
+# Purge task interval in hours  
+# Set to "0" to disable auto purge feature  
+#autopurge.purgeInterval=1  
+
+# server cluster
+server.1=192.168.129.41:28881:38881
+server.2=192.168.129.42:28881:38881
+server.3=192.168.129.43:28881:38881
+
+mkdir -p  /app/java/zkdata/data /app/java/zkdata/log
+
+#集群不同的地方是在每个服务器中输入一个myid号
+192.168.129.41
+echo "1" >/app/java/zkdata/data/myid
+
+192.168.129.42
+echo "2" >/app/java/zkdata/data/myid
+
+192.168.129.43
+echo "3" >/app/java/zkdata/data/myid
+
+#每台都要启动
+/app/java/zookeeper/bin/zkServer.sh start
+/app/java/zookeeper/bin/zkServer.sh status
