@@ -1,0 +1,405 @@
+echo '30 1 * * * root /usr/sbin/ntpdate clock.isc.org ' >>/etc/crontab
+ntpdate clock.isc.org
+
+groupadd -g 800 java
+useradd -g java -u 800  java
+
+echo 'java soft nofile 65536' >> /etc/security/limits.conf
+echo 'java hard nofile 65536' >> /etc/security/limits.conf
+echo 'java soft nproc 16384' >> /etc/security/limits.conf
+echo 'java hard nproc 16384' >> /etc/security/limits.conf
+
+mkdir /app/java/data/hdfs -p
+chown -R java.java /app/java
+
+# hadoop
+tar zxvf hadoop-0.20.2.tar.gz -C /app/java/
+mkdir -p /app/java/data/hdfs
+
+vim core-site.xml
+
+<property>
+  <name>hadoop.tmp.dir</name>
+  <value>/app/java/data/hdfs/hadoop-${user.name}</value>
+</property>
+
+<property>
+  <name>fs.default.name</name>
+  <value>hdfs://dfsname1.cptrue.com:9000</value>
+</property>
+
+ vim hdfs-site.xml
+
+<property>
+    <name>dfs.name.dir</name>
+    <value>/app/java/data/hdfs/namenode</value>
+</property>
+
+<property>
+    <name>dfs.data.dir</name>
+    <value>/app/java/data/hdfs/data</value>
+</property>
+
+<property>
+  <name>dfs.replication</name>
+  <value>2</value>
+</property>
+
+vim masters
+
+dfsname1.cptrue.com
+
+vim slaves
+
+dfsdata1.cptrue.com
+dfsdata2.cptrue.com
+
+vim hadoop-env.sh
+
+export JAVA_HOME=/usr/local/java
+export HADOOP_PID_DIR=/app/java/pids
+# 不需要
+#export HBASE_HOME=/app/java/hbase
+#export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$HBASE_HOME/hbase-0.90.3.jar:$HBASE_HOME/conf:${HBASE_HOME}/lib/zookeeper-3.3.2.jar
+
+# 命令
+/app/java/hadoop/bin/hadoop namenode -format
+/app/java/hadoop/bin/start-all.sh
+/app/java/hadoop/bin/hadoop fs -ls /
+/app/java/hadoop/bin/hadoop fs -mkdir /testapp
+/app/java/hadoop/bin/hadoop dfsadmin -report
+
+
+# idc hadoop hbase-site.xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>dfsname1.itruelife.com</value>
+    <description>The directory shared by region servers.
+    </description>
+  </property>
+  <property>
+    <name>hbase.regionserver.msginterval</name>
+    <value>1000</value>
+    <description>Interval between messages from the RegionServer to HMaster
+    in milliseconds.  Default is 15. Set this value low if you want unit
+    tests to be responsive.
+    </description>
+  </property>
+  <property>
+    <name>hbase.client.pause</name>
+    <value>1000</value>
+    <description>General client pause value.  Used mostly as value to wait
+    before running a retry of a failed get, region lookup, etc.</description>
+  </property>
+  <property>
+    <name>hbase.client.retries.number</name>
+    <value>10</value>
+    <description>Maximum retries.  Used as maximum for all retryable
+    operations such as fetching of the root region from root region
+    server, getting a cell's value, starting a row update, etc.
+    Default: 10.
+    </description>
+  </property>
+  <property>
+    <name>hbase.server.thread.wakefrequency</name>
+    <value>1000</value>
+    <description>Time to sleep in between searches for work (in milliseconds).
+    Used as sleep interval by service threads such as META scanner and log roller.
+    </description>
+  </property>
+  <property>
+    <name>hbase.master.event.waiting.time</name>
+    <value>50</value>
+    <description>Time to sleep between checks to see if a table event took place.
+    </description>
+  </property>
+  <property>
+    <name>hbase.regionserver.handler.count</name>
+    <value>5</value>
+    <description>Count of RPC Server instances spun up on RegionServers
+    Same property is used by the HMaster for count of master handlers.
+    Default is 10.
+    </description>
+  </property>
+  <property>
+    <name>hbase.master.info.port</name>
+    <value>-1</value>
+    <description>The port for the hbase master web UI
+    Set to -1 if you do not want the info server to run.
+    </description>
+  </property>
+  <property>
+    <name>hbase.regionserver.info.port</name>
+    <value>-1</value>
+    <description>The port for the hbase regionserver web UI
+    Set to -1 if you do not want the info server to run.
+    </description>
+  </property>
+  <property>
+    <name>hbase.regionserver.info.port.auto</name>
+    <value>true</value>
+    <description>Info server auto port bind. Enables automatic port
+    search if hbase.regionserver.info.port is already in use.
+    Enabled for testing to run multiple tests on one machine.
+    </description>
+  </property>
+  <property>
+    <name>hbase.master.lease.thread.wakefrequency</name>
+    <value>3000</value>
+    <description>The interval between checks for expired region server leases.
+    This value has been reduced due to the other reduced values above so that
+    the master will notice a dead region server sooner. The default is 15 seconds.
+    </description>
+  </property>
+  <property>
+    <name>hbase.regionserver.optionalcacheflushinterval</name>
+    <value>1000</value>
+    <description>
+    Amount of time to wait since the last time a region was flushed before
+    invoking an optional cache flush. Default 60,000.
+    </description>
+  </property>
+  <property>
+    <name>hbase.regionserver.safemode</name>
+    <value>false</value>
+    <description>
+    Turn on/off safe mode in region server. Always on for production, always off
+    for tests.
+    </description>
+  </property>
+  <property>
+    <name>hbase.hregion.max.filesize</name>
+    <value>67108864</value>
+    <description>
+    Maximum desired file size for an HRegion.  If filesize exceeds
+    value + (value / 2), the HRegion is split in two.  Default: 256M.
+
+    Keep the maximum filesize small so we split more often in tests.
+    </description>
+  </property>
+  <property>
+    <name>hadoop.log.dir</name>
+    <value>${user.dir}/../logs</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>2181</value>
+    <description>Property from ZooKeeper's config zoo.cfg.
+    The port at which the clients will connect.
+    </description>
+  </property>
+  <property>
+    <name>hbase.zookeeper.property.maxClientCnxns</name>
+    <value>5000</value>
+   </property>
+</configuration>
+
+#############################################################
+# hive
+# 建立一个新的配置文件
+vim /app/java/hive/conf/hive-site.xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+ <property>
+    <name>hive.exec.scratchdir</name>
+    <value>/app/java/data/hive/tmp</value>
+  </property>
+
+  <property>
+    <name>hive.querylog.location</name>
+    <value>/app/java/data/hive/querylog</value>
+  </property>
+
+</configuration>
+
+mkdir -p /app/java/data/hive
+chown java.java /app/java/data/hive
+
+# 修改系统环境参数
+vim /app/java/hive/bin/hive-config.sh
+
+export JAVA_HOME=/usr/local/java
+export HADOOP_HOME=/app/java/hadoop
+
+# 启动 
+/app/java/hive/bin/hive
+show tables;
+
+
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+
+# idc hive-site
+<configuration>
+ <property>
+    <name>hive.exec.scratchdir</name>
+    <value>/app/java/data/hive/tmp</value>
+  </property>
+
+  <property>
+    <name>hive.querylog.location</name>
+    <value>/app/java/data/hive/querylog</value>
+  </property>
+
+  <property>
+    <name>hive.aux.jars.path</name>
+    <value>file:///app/java/hive/lib/hive-hbase-handler-0.7.1.jar,file:///app/java/hive/lib/hbase-0.90.3.jar,file:///app/java/hive/lib/zookeeper-3.3.1.jar</value>
+  </property>
+
+  <property>
+     <name>hive.metastore.local</name>
+     <value>true</value>
+     <description>controls whether to connect to remove metastore server or open a new metastore server in Hive Client JVM</description>
+  </property>
+
+  <property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:mysql://dfsmysql.itruelife.com:3306/hive?createDatabaseIfNotExist=true</value>
+    <description>JDBC connect string for a JDBC metastore</description>
+  </property>
+
+   <property>
+     <name>javax.jdo.option.ConnectionDriverName</name>
+     <value>com.mysql.jdbc.Driver</value>
+     <description>Driver class name for a JDBC metastore</description>
+   </property>
+
+  <property>
+     <name>javax.jdo.option.ConnectionUserName</name>
+     <value>hive</value>
+     <description>username to use against metastore database</description>
+  </property>
+
+  <property>
+     <name>javax.jdo.option.ConnectionPassword</name>
+     <value>hivepassword</value>
+     <description>password to use against metastore database</description>
+  </property>
+
+
+</configuration>
+
+#############################################################
+# hbase
+# 配置文件中hdfs://dfsname1.cptrue.com:9000/hbase 此目录自动会建立
+
+tar zxvf hbase-0.90.3.tar.gz
+mv  hbase-0.90.3 /app/java/hbase
+
+vim /app/java/hbase/conf/hbase-env.sh
+
+ export JAVA_HOME=/usr/local/java
+ export HBASE_CLASSPATH=/app/java/hadoop
+
+vim /app/java/hbase/conf/hbase-site.xml
+
+  <property>
+   <name>hbase.rootdir</name>
+    <value>hdfs://dfsname1.cptrue.com:9000/hbase</value>
+  </property>
+
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>true</value>
+  </property>
+
+  <property>
+    <name>hbase.tmp.dir</name>
+    <value>/app/java/data/hbase/hbase-${user.name}</value>
+  </property>
+
+  <property>
+    <name>zookeeper.session.timeout</name>
+    <value>90000</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.tickTime</name>
+    <value>9000</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>dfsname1.cptrue.com</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.dataDir</name>
+    <value>/app/java/data/zookeeper</value>
+  </property>
+
+# idc hbase-site.xm
+<configuration>
+
+  <property>
+   <name>hbase.rootdir</name>
+    <value>hdfs://dfsname1.itruelife.com:9000/hbase</value>
+  </property>
+
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>true</value>
+  </property>
+
+  <property>
+    <name>hbase.tmp.dir</name>
+    <value>/app/java/data/hbase/hbase-${user.name}</value>
+  </property>
+
+  <property>
+    <name>zookeeper.session.timeout</name>
+    <value>90000</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.tickTime</name>
+    <value>9000</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>dfsname1.itruelife.com</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.dataDir</name>
+    <value>/app/java/data/zookeeper</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.maxClientCnxns</name>
+    <value>5000</value>
+    </description>
+  </property>
+
+
+</configuration>
+
+
+# 如果需要多台hbase 配置/app/java/hbase/conf/hbase-site.xml 和 regionservers
+vim /app/java/hbase/conf/hbase-site.xml
+<property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>dfsname1.cptrue.com,dfsname2.cptrue.com,</value>
+  </property>
+
+vim /app/java/hbase/conf/regionservers
+dfsname1.cptrue.com
+dfsname2.cptrue.com
+
+#  复制hadoop-0.20.2-core.jar 替换掉hadoop-0.20.2-core-***.jar
+cp /app/java/hadoop/hadoop-0.20.2-core.jar  /app/java/hbase/lib
+
+/app/java/hbase/bin/start-hbase.sh
+/app/java/hbase/bin/stop-hbase.sh
+/app/java/hbase/bin/hbase shell
+
+# httpsqs
+/usr/local/tokyotyrant/bin/ttserver -host 127.0.0.1 -port 11210 -thnum 8 -dmn -pid /app/ttserver/ttserver.pid -log /app/ttserver/ttserver.log -le -ulog /app/ttserver/ -ulim 128m -sid 1 -rts /app/ttserver/ttserver.rts /app/ttserver/database.tch
+httpsqs -d -p 1218 -x /app/ttserver/
