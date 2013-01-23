@@ -17,16 +17,12 @@ VLAN Name                             Status    Ports
 1004 fddinet-default                  act/unsup
 1005 trnet-default                    act/unsup
 
-
 ################################################################################################
 
 sw0040#show run
 Building configuration...
 
-Current configuration : 13977 bytes
-!
-! Last configuration change at 21:00:52 BJ Mon Jan 21 2013
-! NVRAM config last updated at 21:01:07 BJ Mon Jan 21 2013
+Current configuration : 14682 bytes
 !
 version 12.2
 no service pad
@@ -43,13 +39,13 @@ enable secret 5 $1$mjrI$JkKwggfS.refoqNgtpQqX.
 enable password my91580
 !
 username lijun privilege 15 password 0 my91580
-!
-!
 no aaa new-model
 clock timezone BJ 8
 system mtu routing 1500
+ip subnet-zero
 ip routing
 no ip domain-lookup
+no ip dhcp use vrf connected
 ip dhcp excluded-address 192.168.208.254
 ip dhcp excluded-address 192.168.208.1 192.168.208.50
 ip dhcp excluded-address 192.168.208.101 192.168.208.254
@@ -406,10 +402,13 @@ crypto pki certificate chain TP-self-signed-3363934976
 !
 !
 !
+!
+!
 spanning-tree mode pvst
 spanning-tree extend system-id
 !
 vlan internal allocation policy ascending
+!
 !
 !
 !
@@ -533,6 +532,7 @@ interface Vlan240
 !
 interface Vlan241
  ip address 192.168.241.254 255.255.255.0
+ ip policy route-map tovpn
 !
 interface Vlan242
  ip address 192.168.242.254 255.255.255.0
@@ -548,9 +548,12 @@ interface Vlan245
 !
 ip default-gateway 10.10.240.10
 ip classless
-ip route 0.0.0.0 0.0.0.0 10.10.240.10
+ip route 0.0.0.0 0.0.0.0 10.10.240.100
+ip route 65.55.21.20 255.255.255.255 10.10.240.10
 ip route 101.95.16.94 255.255.255.255 10.10.240.10
 ip route 192.168.128.0 255.255.240.0 10.10.240.10
+ip route 202.96.209.5 255.255.255.255 10.10.240.10
+ip route 202.96.209.133 255.255.255.255 10.10.240.10
 ip route 222.66.80.147 255.255.255.255 10.10.240.10
 ip route 222.73.106.0 255.255.255.0 10.10.240.10
 ip http server
@@ -558,8 +561,22 @@ ip http port 3389
 ip http authentication local
 ip http secure-server
 !
+!
+access-list 101 deny   ip 192.168.241.0 0.0.0.255 192.168.240.0 0.0.0.255
+access-list 101 deny   ip 192.168.241.0 0.0.0.255 192.168.242.0 0.0.0.255
+access-list 101 deny   ip 192.168.241.0 0.0.0.255 192.168.243.0 0.0.0.255
+access-list 101 deny   ip 192.168.241.0 0.0.0.255 192.168.244.0 0.0.0.255
+access-list 101 deny   ip 192.168.241.0 0.0.0.255 192.168.245.0 0.0.0.255
+access-list 101 deny   ip 192.168.241.0 0.0.0.255 192.168.208.0 0.0.0.255
+access-list 101 permit ip 192.168.241.0 0.0.0.255 any
 access-list 2000 deny   tcp any eq 137 any eq 137
 arp 192.168.131.78 446d.57e1.48bd ARPA
+route-map tovpn permit 101
+ match ip address 101
+ set ip next-hop 10.10.240.10
+!
+!
+control-plane
 !
 !
 line con 0
@@ -576,4 +593,3 @@ line vty 5 15
 ntp clock-period 36028880
 ntp server 65.55.21.20
 end
-
