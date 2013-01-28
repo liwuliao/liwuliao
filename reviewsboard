@@ -1,0 +1,26 @@
+apt-get install libapache2-mod-wsgi
+vim /etc/mysql/my.cnf
+python setup.py install
+cd /home/reviewboard/
+python ez_setup.py
+mysqlrb-site install /app/upload/reviewboard/
+python setup.py intall
+apt-get install python-setuptools
+easy_install -U setuptools
+apt-get install python-dev
+apt-get install memcached
+easy_install python-memcached
+apt-get install patch
+easy_install ReviewBoard
+easy_install mysql-python
+apt-get install python-mysqldb
+apt-get install subversion python-svn
+rb-site install /var/www/reviews.cptrue.com
+cd reviews.cptrue.com/
+cd conf/
+cp apache-wsgi.conf  /etc/apache2/sites-available/
+cd /etc/apache2/ites-enabled/
+ln -s ../sites-available/apache-wsgi.conf .
+cd /var/www/
+chown -R www-data.www-data reviews.cptrue.com/
+/etc/init.d/apache2 restart
