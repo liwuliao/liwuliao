@@ -1,28 +1,10 @@
-sw0040#show vlan
-
-VLAN Name                             Status    Ports
----- -------------------------------- --------- -------------------------------
-1    default                          active    Gi0/19, Gi0/20, Gi0/21, Gi0/25, Gi0/26, Gi0/27, Gi0/28
-3    ctc                              active    Gi0/11, Gi0/12
-5    togw                             active    Gi0/1, Gi0/2
-208  ck208                            active    Gi0/3, Gi0/4, Gi0/5, Gi0/6
-240  ck240                            active
-241  ck241                            active    Gi0/13, Gi0/14
-242  ck242                            active    Gi0/15, Gi0/16, Gi0/17, Gi0/18
-243  ck243                            active
-244  ck244                            active    Gi0/7, Gi0/8, Gi0/9, Gi0/10
-245  ck245                            active
-1002 fddi-default                     act/unsup
-1003 token-ring-default               act/unsup
-1004 fddinet-default                  act/unsup
-1005 trnet-default                    act/unsup
-
-################################################################################################
-
 sw0040#show run
 Building configuration...
 
-Current configuration : 14682 bytes
+Current configuration : 15084 bytes
+!
+! Last configuration change at 20:11:59 BJ Fri Jan 25 2013
+! NVRAM config last updated at 20:12:01 BJ Fri Jan 25 2013
 !
 version 12.2
 no service pad
@@ -353,7 +335,7 @@ ip dhcp pool 244122
    host 192.168.244.122 255.255.255.0
    client-identifier 01d4.3d7e.1eb5.99
    client-name 244122
-   dns-server 192.168.244.11
+   dns-server 192.168.208.11
 !
 ip dhcp pool 241064
    host 192.168.241.64 255.255.255.0
@@ -366,6 +348,19 @@ ip dhcp pool 241063
    client-identifier 0168.9423.2d63.49
    dns-server 192.168.244.11
    client-name 241063
+!
+ip dhcp pool 244105
+   host 192.168.244.105 255.255.255.0
+   client-identifier 0150.e549.8b74.93
+   client-name 244105
+   dns-server 192.168.208.11
+!
+ip dhcp pool 208105
+   host 192.168.208.105 255.255.255.0
+   client-identifier 0150.e549.8b74.93
+   client-name 208105
+   dns-server 192.168.208.11
+   default-router 192.168.208.254
 !
 !
 ip dhcp snooping
@@ -532,7 +527,6 @@ interface Vlan240
 !
 interface Vlan241
  ip address 192.168.241.254 255.255.255.0
- ip policy route-map tovpn
 !
 interface Vlan242
  ip address 192.168.242.254 255.255.255.0
@@ -548,8 +542,7 @@ interface Vlan245
 !
 ip default-gateway 10.10.240.10
 ip classless
-ip route 0.0.0.0 0.0.0.0 10.10.240.100
-ip route 65.55.21.20 255.255.255.255 10.10.240.10
+ip route 0.0.0.0 0.0.0.0 10.10.240.10
 ip route 101.95.16.94 255.255.255.255 10.10.240.10
 ip route 192.168.128.0 255.255.240.0 10.10.240.10
 ip route 202.96.209.5 255.255.255.255 10.10.240.10
@@ -592,4 +585,27 @@ line vty 5 15
 !
 ntp clock-period 36028880
 ntp server 65.55.21.20
+ntp server 65.55.21.15
 end
+
+
+
+sw0040# show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi0/19, Gi0/20, Gi0/21, Gi0/25, Gi0/26, Gi0/27, Gi0/28
+3    ctc                              active    Gi0/11, Gi0/12
+5    togw                             active    Gi0/1, Gi0/2
+208  ck208                            active    Gi0/3, Gi0/4, Gi0/5, Gi0/6
+240  ck240                            active
+241  ck241                            active    Gi0/13, Gi0/14
+242  ck242                            active    Gi0/15, Gi0/16, Gi0/17, Gi0/18
+243  ck243                            active
+244  ck244                            active    Gi0/7, Gi0/8, Gi0/9, Gi0/10
+245  ck245                            active
+1002 fddi-default                     act/unsup
+1003 token-ring-default               act/unsup
+1004 fddinet-default                  act/unsup
+1005 trnet-default                    act/unsup
+
