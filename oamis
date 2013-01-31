@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+    <Directory /app/upload>
+       # Options  FollowSymLinks
+       Options MultiViews
+        AllowOverride all
+        Order allow,deny
+        Allow from all
+        DirectoryIndex  index.html index.php
+    </Directory>
+
+    DocumentRoot /app/upload
+   ServerName oamis.cptrue.com
+   ErrorLog  logs/oamis.cptrue.com.erro.log
+   CustomLog logs/oamis.cptrue.com-access.log common
+</VirtualHost>
