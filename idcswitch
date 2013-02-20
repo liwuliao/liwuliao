@@ -1,0 +1,17 @@
+
+swidc128254#  show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi0/24, Gi0/25, Gi0/26, Gi0/27, Gi0/28
+2    mgmt                             active
+3    ctc                              active    Gi0/1, Gi0/2, Gi0/3, Gi0/4, Gi0/5, Gi0/6, Gi0/7, Gi0/8
+4    ssg                              active    Gi0/9
+5    tofw                             active    Gi0/10, Gi0/11, Gi0/12
+129  idc129                           active    Gi0/13, Gi0/14, Gi0/15, Gi0/16, Gi0/17, Gi0/18, Gi0/19, Gi0/20, Gi0/21, Gi0/22
+130  idc130                           active    Gi0/23
+1002 fddi-default                     act/unsup
+1003 token-ring-default               act/unsup
+1004 fddinet-default                  act/unsup
+1005 trnet-default                    act/unsup
+
