@@ -1,0 +1,37 @@
+
+inotify 安装
+
+传统的rsync+crontab同步数据和实际会有差异，而inotify则基本可以达到实时的效果，当文件有任何变动，就会触发inotify。
+inotify 是一个 Linux 内核特性，它监控文件系统，并且及时向专门的应用程序发出相关的事件警告，比如删除、读、写和卸载操作等。inotify安装完成之后会有两个命令，
+inotifywait 和 inotifywatch。inotifywait用于等待文件或者文件集上的一个特定事件，可以监控任何文件或者目录位置，并且可以递归地监控整个目录树;inotifywatch 用于收集被监控的文件系统统计数据，包括每个inotify事件发生多少次等信息。
+
+
+安装
+[python] view plaincopyprint?
+
+    cd /tmp  
+    wget http://github.com/downloads/rvoicilas/inotify-tools/inotify-tools-3.14.tar.gz --no-check-certificate  
+    tar zxvf inotify-tools-3.14.tar.gz  
+    cd inotify-tools-3.14  
+    ./configure&&make&&make install  
+      
+      
+    ln -sv /usr/local/lib/libinotify* /usr/lib/  
+    ln -s /usr/local/lib/libinotifytools.so.0 /usr/lib64/libinotifytools.so.0  
+    #!/bin/bash  
+      
+      
+    src=/tmp/test/ # directory to monitor  
+    /usr/local/bin/inotifywait -rmq  -e modify $src |  while read  event  
+    do  
+    echo "hello" >> 1.txt  
+    done  
+      
+      
+    做成开机启动  
+    chmod u+x /tmp/mon.sh  
+    echo "nohup /bin/bash /tmp/mon.sh &" >> /etc/rc.d/rc.local  
+    nohup /bin/bash /tmp/mon.sh &  
+
+
+这时候只要/tmp/test/一有改动，在会触发inotifywait，运行echo命令。 
