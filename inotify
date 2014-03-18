@@ -1,4 +1,3 @@
-
 inotify 安装
 
 传统的rsync+crontab同步数据和实际会有差异，而inotify则基本可以达到实时的效果，当文件有任何变动，就会触发inotify。
@@ -7,8 +6,6 @@ inotifywait 和 inotifywatch。inotifywait用于等待文件或者文件集上�
 
 
 安装
-[python] view plaincopyprint?
-
     cd /tmp  
     wget http://github.com/downloads/rvoicilas/inotify-tools/inotify-tools-3.14.tar.gz --no-check-certificate  
     tar zxvf inotify-tools-3.14.tar.gz  
