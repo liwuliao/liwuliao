@@ -1,4 +1,4 @@
-
+# lijun
 # git 增加文件并更新到仓库
 git add README1
 git commit -m 'second commit'
